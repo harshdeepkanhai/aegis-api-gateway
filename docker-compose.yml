@@ -1,0 +1,14 @@
+services:
+  redis: { image: redis:7, ports: ["6379:6379"] }
+  upstreams:
+    build: { context: ., dockerfile: Dockerfile }
+    command: ["uv", "run", "uvicorn", "upstreams.mock_service:app", "--host", "0.0.0.0", "--port", "9000"]
+    ports: ["9000:9000"]
+  gateway:
+    build: { context: ., dockerfile: Dockerfile }
+    command: ["uv", "run", "uvicorn", "aegis.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      AEGIS_UPSTREAM_URL: http://upstreams:9000
+      AEGIS_REDIS_URL: redis://redis:6379/0
+    ports: ["8000:8000"]
+    depends_on: [redis, upstreams]
