@@ -1,6 +1,7 @@
 import strawberry
 from strawberry.dataloader import DataLoader
 from strawberry.fastapi import GraphQLRouter
+
 from aegis.adapters.upstream import UpstreamClient
 
 
@@ -28,6 +29,7 @@ def make_book_loader(client: UpstreamClient) -> DataLoader[int, list[Book]]:
         for r in rows:
             grouped[r["author_id"]].append(Book(id=r["id"], title=r["title"]))
         return [grouped[aid] for aid in author_ids]  # order must match keys
+
     return DataLoader(load_fn=batch)
 
 
@@ -42,7 +44,8 @@ class Query:
 schema = strawberry.Schema(query=Query)
 
 
-def build_graphql_router(client: UpstreamClient) -> GraphQLRouter:
+def build_graphql_router(client: UpstreamClient) -> GraphQLRouter[dict, None]:
     async def context_getter() -> dict:
         return {"client": client, "book_loader": make_book_loader(client)}
+
     return GraphQLRouter(schema, context_getter=context_getter, path="/graphql")

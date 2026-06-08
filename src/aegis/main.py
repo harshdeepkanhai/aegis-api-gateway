@@ -1,4 +1,5 @@
 from fastapi import Depends, FastAPI
+
 from aegis.adapters.auth import CurrentUser, issue_dev_token, require_scope
 from aegis.adapters.graphql import build_graphql_router
 from aegis.adapters.upstream import UpstreamClient

@@ -1,4 +1,8 @@
-import json, httpx, redis.asyncio as aioredis
+import json
+
+import httpx
+import redis.asyncio as aioredis
+
 from aegis.config import get_settings
 
 

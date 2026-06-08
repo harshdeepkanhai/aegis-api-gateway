@@ -21,11 +21,14 @@ dependencies = [
 ]
 
 [project.scripts]
-aegis-api-gateway = "aegis_api_gateway:main"
+aegis-api-gateway = "aegis:main"
 
 [build-system]
 requires = ["uv_build>=0.11.18,<0.12.0"]
 build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "aegis"
 
 [dependency-groups]
 dev = [
@@ -37,3 +40,27 @@ dev = [
     "ruff>=0.15.16",
     "testcontainers>=4.14.2",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.flake8-bugbear]
+# Depends/Header in argument defaults is the FastAPI idiom, not a B008 bug.
+extend-immutable-calls = [
+    "fastapi.Depends",
+    "fastapi.Header",
+    "fastapi.Query",
+    "aegis.adapters.auth.require_scope",
+]
+
+[tool.mypy]
+python_version = "3.13"
+ignore_missing_imports = true
